@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.2.1
-// @description  try to siplify PArcourSup display!
+// @version      0.2.2
+// @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=parcoursup.fr
