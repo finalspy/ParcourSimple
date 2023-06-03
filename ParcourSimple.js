@@ -1,21 +1,18 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.2
+// @version      0.2.1
 // @description  try to siplify PArcourSup display!
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=parcoursup.fr
-// @grant GM_setValue
-// @grant GM_getValue
-// @grant    GM_addStyle
-// @require http://userscripts-mirror.org/scripts/source/107941.user.js
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_addStyle
 // ==/UserScript==
 
 (function() {
     'use strict';
-    //GM_SuperValue.set ("test", 12);
-    //var x = GM_SuperValue.get ("test",42);
 
     GM_addStyle ( `
         #parcoursimple {
@@ -57,19 +54,11 @@
         /* add other CSS here */
     ` );
 
-    document.addEventListener('keydown', function(e){
-        console.log(e.which);
-        if(e.which == 83) {
-
-            return false;
-        }
-    }, true);
-
     $("body").append('<div id="parcoursimple" name="parcoursimple">' +
-                     '<table id="parcoursimple_table">'+
-                     '<caption>Voeux en ATTENTE</caption>' +
-                     '<thead><tr><th>Ecole</th><th>Cursus</th><th>Places</th><th>dernier</th><th>2022</th><th>classement</th><th>attente</th><th>total</th></tr></thead>' +
-                     '<tbody id="parcoursimple_table_body"></tbody></table></div>');
+        '<table id="parcoursimple_table">'+
+        '<caption>Voeux en ATTENTE</caption>' +
+        '<thead><tr><th>Ecole</th><th>Cursus</th><th>Places</th><th>dernier</th><th>2022</th><th>classement</th><th>attente</th><th>total</th></tr></thead>' +
+        '<tbody id="parcoursimple_table_body"></tbody></table></div>');
 
     // get all wishes
     var cards = Array.from(document.querySelectorAll(".psup-wish-card--info"));
@@ -121,17 +110,16 @@
                 const last = template.querySelector(".fr-alert ul li:nth-child(3) b").innerHTML;
                 const lastYear = template.querySelector(".fr-alert ul li:nth-child(4) b");
                 const lastLastYear = (lastYear)?lastYear.innerHTML:"?";
-                let wish = new Wish(school,
-                                    course,
-                                    id,
-                                    waiting_position,
-                                    waiting_total,
-                                    places,
-                                    ranking,
-                                    last,
-                                    lastLastYear
-                                   );
-                wishes.push(wish);
+                wishes.push(new Wish(school,
+                    course,
+                    id,
+                    waiting_position,
+                    waiting_total,
+                    places,
+                    ranking,
+                    last,
+                    lastLastYear
+                ));
             },
             error: function (h) { console.err(h); },
             complete: function () {
@@ -141,7 +129,4 @@
             }
         })
     });
-
-    //console.info(wishes);
-
 })();
