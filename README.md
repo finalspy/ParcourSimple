@@ -6,7 +6,7 @@ ce script vous affiche un tableau avec l'ensemble de vos vœux en attente :
 
 ![Capture d'écran](ParcourSimpleTable.png "ParcourSimpleTable")
 
-Voici ce que cela donne sur la page principae de ParcourSup. 
+Voici ce que cela donne sur la page principale de ParcourSup. 
 
 ![Capture d'écran](ParcourSimple.png "ParcourSimple")
 
