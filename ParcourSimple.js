@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.4
+// @version      0.5
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
@@ -50,6 +50,9 @@
             position: sticky;
             top: 0px;
         }
+        #parcoursimple tr{
+             line-height: 14px;
+        }
         #parcoursimple th{
             color: #FFF;
             background-color: var(--background-active-blue-france);
@@ -69,10 +72,30 @@
             color: lightgrey;
         }
         #parcoursimple .ok{
-            background-color: lightgreen;
+            color: darkgreen;
+            font-weight: bold;
+        }
+        #parcoursimple .nan{
+            color: #CCC;
         }
         #parcoursimple .ko{
+            color: darkred;
+            font-style: italic;
+        }
+        #parcoursimple .max{
             background-color: lightpink;
+            border: dashed 1px black;
+            width:100%;
+            text-align: right;
+        }
+        #parcoursimple .propal{
+            position:relative;
+            left:0;
+            top:-16px;
+            dispay:block;
+            background-color: lightgreen;
+            border: solid 1px black;
+            text-align: left;
         }
         /* add other CSS here */
     ` );
@@ -80,7 +103,7 @@
     let show = true;
     document.addEventListener('keyup', function(e){
         // if click on a
-        if(65 == e.which){
+        if(65 === e.which){
             const x = document.getElementById('parcoursimple');
             x.style.display = (x.style.display === "none")?"block":"none";
         }
@@ -90,7 +113,17 @@
     $("body").append(
         '<div id="parcoursimple" name="parcoursimple">' +
         '<table id="parcoursimple_table">'+
-        '<thead><tr><th>Ecole</th><th>Cursus</th><th>Places</th><th>Dernier</th><th>2022</th><th>Classement</th><th>Liste Attente</th><th>Total Attente</th></tr></thead>' +
+        '<thead><tr>' +
+        ' <th>Ecole</th>' +
+        ' <th>Cursus</th>' +
+        ' <th>Places<br/>Disponibles</th>' +
+        ' <th>Dernier<br/>2022</th>' +
+        ' <th>Position au<br/>Classement</th>' +
+        ' <th>Dernière<br/>Proposition</th>' +
+        ' <th>Place en<br/>Liste</th>' +
+        ' <th>--Graphique--</th>'+
+        ' <th>% progression<br/>100% = proposition</th>'+
+        '</tr></thead>' +
         '<tbody id="parcoursimple_table_body"></tbody></table></div>'
     );
 
@@ -114,15 +147,16 @@
                 + "<td>"+ this.school + "</td>"
                 + "<td>" + this.course + "</td>"
                 + "<td class='right'>" + this.places + "</td>"
-                + "<td class='right'>" + this.last + "</td>"
                 + "<td class='right'>" + this.lastLastYear + "</td>"
                 + "<td class='right " + this.rankColor() + "'>" + this.ranking + "</td>"
+                + "<td class='right'>" + this.last + "</td>"
                 + "<td class='right bold'>" + this.waiting_position + "</td>"
-                + "<td class='right light'>" + this.waiting_total + "</td>"
+                + "<td><div class='max'>"+this.waiting_position+"</div><div class='propal' style='width:"+(this.last/(this.last+this.waiting_position)*100)+"%'>"+this.last+"</div></td>"
+                + "<td class='right bold'>" + Math.round(this.last/(this.last+this.waiting_position)*100) + "%</td>"
                 + "</tr>";
         }
         rankColor(){
-            return this.lastLastYear > this.ranking ? "ok" : "ko";
+            return isNaN(this.lastLastYear)?"nan":this.lastLastYear > this.ranking ? "ok" : "ko";
         }
     }
     const promises = [];
