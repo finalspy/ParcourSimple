@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.2.3
+// @version      0.3
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
@@ -54,7 +54,12 @@
         #parcoursimple .light{
             color: lightgrey;
         }
-
+        #parcoursimple .ok{
+            background-color: lightgreen;
+        }
+        #parcoursimple .ko{
+            background-color: lightpink;
+        }
         /* add other CSS here */
     ` );
 
@@ -71,12 +76,12 @@
             this.school=school;
             this.course=course;
             this.id=id;
-            this.waiting_position=waiting_position;
-            this.waiting_total=waiting_total;
-            this.places=places;
-            this.ranking=ranking;
-            this.last=last;
-            this.lastLastYear=lastLastYear;
+            this.waiting_position=Number(waiting_position);
+            this.waiting_total=Number(waiting_total);
+            this.places=Number(places);
+            this.ranking=Number(ranking);
+            this.last=Number(last);
+            this.lastLastYear=Number(lastLastYear);
         }
         show(){
             return "<tr>"
@@ -85,10 +90,13 @@
                 + "<td class='right'>" + this.places + "</td>"
                 + "<td class='right'>" + this.last + "</td>"
                 + "<td class='right'>" + this.lastLastYear + "</td>"
-                + "<td class='right'>" + this.ranking + "</td>"
+                + "<td class='right " + this.rankColor() + "'>" + this.ranking + "</td>"
                 + "<td class='right bold'>" + this.waiting_position + "</td>"
                 + "<td class='right light'>" + this.waiting_total + "</td>"
                 + "</tr>";
+        }
+        rankColor(){
+            return this.lastLastYear > this.ranking ? "ok" : "ko";
         }
     }
     cards.forEach(card => {
