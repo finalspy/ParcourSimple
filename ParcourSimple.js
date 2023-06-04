@@ -65,11 +65,11 @@
 
     $("body").append('<div id="parcoursimple" name="parcoursimple">' +
         '<table id="parcoursimple_table">'+
-        '<thead><tr><th>Ecole</th><th>Cursus</th><th>Places</th><th>dernier</th><th>2022</th><th>classement</th><th>attente</th><th>total</th></tr></thead>' +
+        '<thead><tr><th>Ecole</th><th>Cursus</th><th>Places</th><th>Dernier</th><th>2022</th><th>Classement</th><th>Liste Attente</th><th>Total Attente</th></tr></thead>' +
         '<tbody id="parcoursimple_table_body"></tbody></table></div>');
 
     // get all wishes
-    var cards = Array.from(document.querySelectorAll(".psup-wish-card--info"));
+    const cards = Array.from(document.querySelectorAll(".psup-wish-card--info"));
     const wishes = [];
     class Wish {
         constructor(school, course, id, waiting_position, waiting_total, places, ranking, last, lastLastYear){
@@ -99,14 +99,15 @@
             return this.lastLastYear > this.ranking ? "ok" : "ko";
         }
     }
+    const promises = [];
     cards.forEach(card => {
         const onclick = card.querySelectorAll('button')[0].getAttribute('onclick');
         const id = onclick.substring(onclick.indexOf("&") + 1, onclick.lastIndexOf("'"));
         const school = card.querySelectorAll('.psup-wish-card__school')[0].innerHTML;
         const course= card.querySelectorAll('.psup-wish-card__course')[0].innerHTML;
         //https://dossierappel.parcoursup.fr/Candidat/
-        const URL = "admissions?ACTION=2&" +id + "&frOpened=false&frJsModalButton=true"
-        $.ajax({
+        const URL = "admissions?ACTION=2&" +id + "&frOpened=false&frJsModalButton=true";
+        promises.push($.ajax({
             url: URL,
             type: "GET",
             dataType: "html",
@@ -133,11 +134,14 @@
                 ));
             },
             error: function (h) { console.err(h); },
-            complete: function () {
-                const w = wishes[wishes.length -1];
-                let r = document.getElementById("parcoursimple_table_body");
-                r.innerHTML += w.show().trim();
-            }
-        })
+            complete: function () {}
+        }));
+    });
+    $.when.apply($, promises).then(function() {
+        wishes.sort((a,b) => a.waiting_position - b.waiting_position);
+        let r = document.getElementById("parcoursimple_table_body");
+        for(let w in wishes){
+            r.innerHTML += wishes[w].show().trim();
+        }
     });
 })();
