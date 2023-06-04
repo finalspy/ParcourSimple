@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.5
+// @version      0.6
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
@@ -22,7 +22,7 @@
             display:block;
             z-index: 99999;
             height: 40px;
-            padding: 10px;
+            padding: 4px 10px;
             background-color: var(--background-active-blue-france);
             color: #FFF;
         }
@@ -97,6 +97,20 @@
             border: solid 1px black;
             text-align: left;
         }
+        #psimple .key{
+            font-family: Courrier;
+            background-color: lightgrey;
+            color: #000;
+            font-weight: bold;
+            border: 1px solid black;
+            border-radius: 3px;
+            display: inline-block;
+            padding: 0px 8px 2px;
+        }
+        #psimple .help{
+            display: inline-block;
+            padding: 0 30px;
+        }
         /* add other CSS here */
     ` );
 
@@ -107,9 +121,34 @@
             const x = document.getElementById('parcoursimple');
             x.style.display = (x.style.display === "none")?"block":"none";
         }
+        // if click r
+        else if(82 === e.which){
+            // sort by nb places liste attente
+            wishes.sort((a,b) => a.waiting_position - b.waiting_position);
+            let r = document.getElementById("parcoursimple_table_body");
+            r.innerHTML='';
+            for(let w in wishes){
+                r.innerHTML += wishes[w].show().trim();
+            }
+        }
+        // if click t
+        else if(84 === e.which){
+            // sort by % progression
+            wishes.sort((a,b) => b.last/(b.last+b.waiting_position) - a.last/(a.last+a.waiting_position));
+            let r = document.getElementById("parcoursimple_table_body");
+            r.innerHTML='';
+            for(let w in wishes){
+                r.innerHTML += wishes[w].show().trim();
+            }
+        }
     });
 
-    $("body").prepend('<div id="psimple"><img src="/favicon.ico">Touche "a" affiche/cache le tableau</div>');
+    $("body").prepend('<div id="psimple"><img src="/favicon.ico"> '+
+        'Clavier : ' +
+        '<div class="help"><div class="key">a</div> affiche/cache le tableau</div>' +
+        '|<div class="help"><div class="key">r</div> tri par position en liste d\'attente</div>' +
+        '|<div class="help"><div class="key">t</div> tri par % de progression dans le classement</div>' +
+        '</div>');
     $("body").append(
         '<div id="parcoursimple" name="parcoursimple">' +
         '<table id="parcoursimple_table">'+
