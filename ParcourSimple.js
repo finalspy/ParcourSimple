@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.2.2
+// @version      0.2.3
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
@@ -20,35 +20,39 @@
             z-index: 9999;
             top:10px;
             right:10px;
-            /*height:480px;
-            width:800px;
-            overflow:scroll;*/
+            max-height: 50%;
+            overflow-y: auto;
             background-color: whitesmoke;
-            padding: 10px;
+            margin: 10px;
             border: dotted dimgray 0.5px;
             box-shadow: 10px 8px 5px gray;
         }
-        .right{
-            text-align: right;
-        }
-        .bold{
-            font-weight: bold;
-        }
-        .light{
-            color: lightgrey;
-        }
-        table{
+        #parcoursimple table{
             border-collapse: collapse;
             vertical-align: middle;
+            background-color: white;
         }
-        th, td {
-            border: 1px solid black;
-            padding: 4px;
+        #parcoursimple thead{
+            position: sticky;
+            top: 0px;
         }
-        th{
+        #parcoursimple th{
             color: white;
             background-color: darkblue;
             font-weight: bold;
+        }
+        #parcoursimple th, #parcoursimple td{
+            border: 1px solid black;
+            padding: 4px;
+        }
+        #parcoursimple .right{
+            text-align: right;
+        }
+        #parcoursimple .bold{
+            font-weight: bold;
+        }
+        #parcoursimple .light{
+            color: lightgrey;
         }
 
         /* add other CSS here */
@@ -56,7 +60,6 @@
 
     $("body").append('<div id="parcoursimple" name="parcoursimple">' +
         '<table id="parcoursimple_table">'+
-        '<caption>Voeux en ATTENTE</caption>' +
         '<thead><tr><th>Ecole</th><th>Cursus</th><th>Places</th><th>dernier</th><th>2022</th><th>classement</th><th>attente</th><th>total</th></tr></thead>' +
         '<tbody id="parcoursimple_table_body"></tbody></table></div>');
 
@@ -78,7 +81,7 @@
         show(){
             return "<tr>"
                 + "<td>"+ this.school + "</td>"
-                + "<td>" + this.course.substr(0,20) + "</td>"
+                + "<td>" + this.course + "</td>"
                 + "<td class='right'>" + this.places + "</td>"
                 + "<td class='right'>" + this.last + "</td>"
                 + "<td class='right'>" + this.lastLastYear + "</td>"
