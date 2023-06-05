@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.6
+// @version      0.6.1
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
@@ -97,6 +97,13 @@
             border: solid 1px black;
             text-align: left;
         }
+        #parcoursimple .blur{
+            color: transparent;
+            text-shadow: 0 0 20px #002;
+        }
+        .hide{
+            display: none;
+        }
         #psimple .key{
             font-family: Courrier;
             background-color: lightgrey;
@@ -140,6 +147,11 @@
             for(let w in wishes){
                 r.innerHTML += wishes[w].show().trim();
             }
+        }else if(66 === e.which){
+            document.querySelectorAll("#parcoursimple tbody td:first-child").forEach(x=>x.classList.add('blur'));
+            document.querySelectorAll("#parcoursimple tbody td:nth-child(2)").forEach(x=>x.classList.add('blur'));
+        }else if(67 === e.which){
+            document.querySelectorAll("*[name='useless']").forEach(x=> x.classList.toggle('hide'));
         }
     });
 
@@ -162,6 +174,7 @@
         ' <th>Place en<br/>Liste</th>' +
         ' <th>--Graphique--</th>'+
         ' <th>% progression<br/>100% = proposition</th>'+
+        ' <th name="useless" class="hide">Total Attente</th>' +
         '</tr></thead>' +
         '<tbody id="parcoursimple_table_body"></tbody></table></div>'
     );
@@ -192,6 +205,7 @@
                 + "<td class='right bold'>" + this.waiting_position + "</td>"
                 + "<td><div class='max'>"+this.waiting_position+"</div><div class='propal' style='width:"+(this.last/(this.last+this.waiting_position)*100)+"%'>"+this.last+"</div></td>"
                 + "<td class='right bold'>" + Math.round(this.last/(this.last+this.waiting_position)*100) + "%</td>"
+                + "<td name='useless' class='right light hide'>" + this.waiting_total + "</td>"
                 + "</tr>";
         }
         rankColor(){
