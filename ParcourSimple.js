@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.6.1
+// @version      0.6.2
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
@@ -103,6 +103,9 @@
         }
         .hide{
             display: none;
+        }
+        .show{
+            display: block;
         }
         #psimple .key{
             font-family: Courrier;
