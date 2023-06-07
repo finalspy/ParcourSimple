@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.6.2
+// @version      0.6.3
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
@@ -28,6 +28,20 @@
         }
         #psimple img{
             margin: 0 10px;
+        }
+                #psimple .key{
+            font-family: Courrier;
+            background-color: lightgrey;
+            color: #000;
+            font-weight: bold;
+            border: 1px solid black;
+            border-radius: 3px;
+            display: inline-block;
+            padding: 0px 8px 2px;
+        }
+        #psimple .help{
+            display: inline-block;
+            padding: 0 10px;
         }
         #parcoursimple {
             position:fixed;
@@ -106,20 +120,6 @@
         }
         .show{
             display: block;
-        }
-        #psimple .key{
-            font-family: Courrier;
-            background-color: lightgrey;
-            color: #000;
-            font-weight: bold;
-            border: 1px solid black;
-            border-radius: 3px;
-            display: inline-block;
-            padding: 0px 8px 2px;
-        }
-        #psimple .help{
-            display: inline-block;
-            padding: 0 30px;
         }
         /* add other CSS here */
     ` );
