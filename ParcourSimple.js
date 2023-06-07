@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.6.4
+// @version      0.7
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @license      GNU GPLv3
@@ -30,7 +30,7 @@
         #psimple img{
             margin: 0 10px;
         }
-                #psimple .key{
+        #psimple .key{
             font-family: Courrier;
             background-color: lightgrey;
             color: #000;
@@ -48,7 +48,6 @@
             position:fixed;
             z-index: 9999;
             top:40px;
-            left:10px;
             max-height: 98%;
             overflow-y: auto;
             background-color: whitesmoke;
@@ -57,8 +56,6 @@
             box-shadow: 10px 8px 5px gray;
         }
         #parcoursimple table{
-            border-collapse: collapse;
-            vertical-align: middle;
             background-color: #FFF;
         }
         #parcoursimple thead{
@@ -68,13 +65,14 @@
         #parcoursimple tr{
              line-height: 14px;
         }
+        #parcoursimple tr:nth-child(even) {background: #DDF}
+        #parcoursimple tr:nth-child(odd) {background: #EEE}
         #parcoursimple th{
             color: #FFF;
             background-color: var(--background-active-blue-france);
             font-weight: bold;
         }
         #parcoursimple th, #parcoursimple td{
-            border: 1px solid black;
             padding: 4px;
         }
         #parcoursimple .right{
@@ -87,15 +85,20 @@
             color: lightgrey;
         }
         #parcoursimple .ok{
-            color: darkgreen;
+            background-color: lightgreen;
             font-weight: bold;
         }
         #parcoursimple .nan{
-            color: #CCC;
+            background-color: #CCC;
         }
         #parcoursimple .ko{
-            color: darkred;
+            background-color: lightpink;
             font-style: italic;
+        }
+        #parcoursimple .diff{
+            display: inline;
+            font-size: x-small;
+            min-width: 30px;
         }
         #parcoursimple .max{
             background-color: lightpink;
@@ -107,7 +110,7 @@
             position:relative;
             left:0;
             top:-16px;
-            dispay:block;
+            display: block;
             background-color: lightgreen;
             border: solid 1px black;
             text-align: left;
@@ -171,7 +174,7 @@
         '<thead><tr>' +
         ' <th>Ecole</th>' +
         ' <th>Cursus</th>' +
-        ' <th>Places<br/>Disponibles</th>' +
+        ' <th>Places<br/>Dispo.</th>' +
         ' <th>Dernier<br/>2022</th>' +
         ' <th>Position au<br/>Classement</th>' +
         ' <th>Dernière<br/>Proposition</th>' +
@@ -203,8 +206,8 @@
                 + "<td>"+ this.school + "</td>"
                 + "<td>" + this.course + "</td>"
                 + "<td class='right'>" + this.places + "</td>"
-                + "<td class='right'>" + this.lastLastYear + "</td>"
-                + "<td class='right " + this.rankColor() + "'>" + this.ranking + "</td>"
+                + "<td class='right'>" + (Number.isNaN(this.lastLastYear)?"???":this.lastLastYear) + "</td>"
+                + "<td class='right " + this.rankColor() + "'>" + this.ranking + this.rankDiff() + "</td>"
                 + "<td class='right'>" + this.last + "</td>"
                 + "<td class='right bold'>" + this.waiting_position + "</td>"
                 + "<td><div class='max'>"+this.waiting_position+"</div><div class='propal' style='width:"+(this.last/(this.last+this.waiting_position)*100)+"%'>"+this.last+"</div></td>"
@@ -214,6 +217,9 @@
         }
         rankColor(){
             return isNaN(this.lastLastYear)?"nan":this.lastLastYear > this.ranking ? "ok" : "ko";
+        }
+        rankDiff(){
+            return (Number.isNaN(this.lastLastYear)?"":" <div class='diff'>("+(this.lastLastYear - this.ranking)+")</div>");
         }
     }
     const promises = [];
