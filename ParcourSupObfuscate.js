@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSup Obfuscate
 // @namespace    http://tampermonkey.net/
-// @version      0.1.1
+// @version      0.1.2
 // @description  Obfuscate sensitive data on parcoursup screen
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/authentification
@@ -20,6 +20,11 @@
         }
     ` );
 
-    document.querySelector(".psup-user-menu-btn--logged").innerHTML = "Candidat XYZ";
+    document.querySelector(".psup-user-menu-btn--logged").innerHTML = "&lt;Prénom NOM&gt;";
+    document.querySelectorAll(".psup-wish-card__school").forEach(e => {e.innerHTML = "&lt;Ecole/Université&gt;";});
+    document.querySelectorAll(".psup-wish-card__course").forEach(e => {e.innerHTML = "&lt;Formation&gt;";});
+    document.querySelectorAll("#parcoursimple tbody td:first-child").forEach(e => {e.innerHTML = "&lt;Ecole/Université&gt;";});
+    document.querySelectorAll("#parcoursimple tbody td:nth-child(2)").forEach(e => {e.innerHTML = "&lt;Formation&gt;";});
+
 
 })();
