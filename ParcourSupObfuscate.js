@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         ParcourSup Obfuscate
 // @namespace    http://tampermonkey.net/
-// @version      0.1.2
-// @description  Obfuscate sensitive data on parcoursup screen
+// @version      0.1.3
+// @description  Cache les informations sensibles a l'ecran (nom, prenom, etqblissements, formation ..), permet de screen sans divulguer d'infos perso
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/authentification
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
