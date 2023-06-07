@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSup Obfuscate
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.1.1
 // @description  Obfuscate sensitive data on parcoursup screen
 // @author       ypetit
 // @match        https://dossierappel.parcoursup.fr/Candidat/authentification
