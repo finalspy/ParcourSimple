@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.7
+// @version      0.7.1
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @license      GNU GPLv3
@@ -210,7 +210,10 @@
                 + "<td class='right " + this.rankColor() + "'>" + this.ranking + this.rankDiff() + "</td>"
                 + "<td class='right'>" + this.last + "</td>"
                 + "<td class='right bold'>" + this.waiting_position + "</td>"
-                + "<td><div class='max'>"+this.waiting_position+"</div><div class='propal' style='width:"+(this.last/(this.last+this.waiting_position)*100)+"%'>"+this.last+"</div></td>"
+                + "<td>"
+                + "<div class='max'>"+this.waiting_position+"</div>"
+                + "<div class='propal' style='width:"+(this.last/(this.last+this.waiting_position)*100)+"%'>"+this.last+"</div>"
+                + "</td>"
                 + "<td class='right bold'>" + Math.round(this.last/(this.last+this.waiting_position)*100) + "%</td>"
                 + "<td name='useless' class='right light hide'>" + this.waiting_total + "</td>"
                 + "</tr>";
@@ -219,7 +222,7 @@
             return isNaN(this.lastLastYear)?"nan":this.lastLastYear > this.ranking ? "ok" : "ko";
         }
         rankDiff(){
-            return (Number.isNaN(this.lastLastYear)?"":" <div class='diff'>("+(this.lastLastYear - this.ranking)+")</div>");
+            return (Number.isNaN(this.lastLastYear)?"":" <div class='diff'>("+(this.ranking - this.lastLastYear)+")</div>");
         }
     }
     const promises = [];
