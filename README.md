@@ -8,25 +8,29 @@ ce script vous affiche un tableau avec l'ensemble de vos vœux en attente :
 
 Le script ajoute un menu indiquant des raccourcis clavier aussi : 
 
-![Menu ParcourSimple](ParcourSimple_v0.6_help.jpg "Menu ParcourSimple")
+![Menu ParcourSimple](ParcourSimpleMenu.jpg "Menu ParcourSimple")
 
  - `a` pour cacher / Afficher le tableau.
- - `r` pour trier par placement dans la liste d'attente (par défaut).
- - `t` pour trier par progression relative dans la liste d'attente.
-
-La position relative donne une idée de si l'on se rapproche d'une proposition ou pas. Selon les formations le nombre de places disponibles, et les désistements ne sont pas les memes et se baser sur son placement en liste d'attente peut fausser la perception.
-Exemple, une formation avec 50 places si on est 150eme en attente ca n'a pas la meme signification qu'une formation a 350 places.
-On peut aussi avoir des formations ou il y a beaucoup de desistements et d'autres peu.
-
-Il y a 2 autres raccourcis cachés : 
-
 - `b` pour masquer les noms des ecols/formatins dans le tableau si vous voulez screen/record anonymement
-- `t` pour afficher le nombre de personnes restant en liste d'attente
 
 
 Voici ce que cela donne sur la page principale de ParcourSup. 
 
 ![Capture d'écran](ParcourSimple.jpg "ParcourSimple")
+
+
+## Explications de l'indicateur graphique
+
+![Capture d'écran](ParcourSimpleVisualisation.jpg "ParcourSimple Visualisation")
+
+- La partie bleue correspond aux places de la formation visée (elle ne bouge pas) : 45
+- La partie verte correspond aux personnes ayant reçu une proposition, c'est la place au classement de la dernière personne avoir reçu une porposition moins le nombre de places de la formation. Ici l'exemple montre 72 = 117 - 45.
+- la partie jaune montre le nombre de personnes restant en liste d'attente jusqu'à vous : 18
+- Votre position est matérialisé par les chevrons verticaux entre le jaune et le rouge.
+- Enfin la partie rouge matérialise les personnes en liste d'attente derrière vous. C'est la différence entre le total de la liste d'attente et votre position en liste d'attente : 70 = 88 - 18.
+
+
+
 
 Ça ne vous donnera pas vos vœux positifs, mais déjà, c'est cool non ? 
 
