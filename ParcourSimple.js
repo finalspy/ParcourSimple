@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.7.1
+// @version      0.8
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @license      GNU GPLv3
 // @match        https://dossierappel.parcoursup.fr/Candidat/admissions?ACTION=0
+// @match        https://dossier.parcoursup.fr/Candidat/admissions?ACTION=0
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=parcoursup.fr
-// @grant        GM_setValue
-// @grant        GM_getValue
 // @grant        GM_addStyle
 // ==/UserScript==
 
@@ -17,10 +16,10 @@
 
     GM_addStyle ( `
         #psimple{
-            position:absolute;
-            top:0;
-            left:0;
-            display:block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
             z-index: 99999;
             height: 40px;
             padding: 4px 10px;
@@ -38,7 +37,7 @@
             border: 1px solid black;
             border-radius: 3px;
             display: inline-block;
-            padding: 0px 8px 2px;
+            padding: 0 8px 2px;
         }
         #psimple .help{
             display: inline-block;
@@ -50,20 +49,23 @@
             top:40px;
             max-height: 98%;
             overflow-y: auto;
+            overflow-x: hidden;
             background-color: whitesmoke;
             margin: 10px;
-            border: dotted dimgray 0.5px;
+            border: dotted dimgray 1px;
             box-shadow: 10px 8px 5px gray;
         }
         #parcoursimple table{
             background-color: #FFF;
+            overflow-x: hidden;
         }
         #parcoursimple thead{
             position: sticky;
-            top: 0px;
+            top: 0;
+            z-index:99;
         }
         #parcoursimple tr{
-             line-height: 14px;
+             line-height: 20px;
         }
         #parcoursimple tr:nth-child(even) {background: #DDF}
         #parcoursimple tr:nth-child(odd) {background: #EEE}
@@ -73,7 +75,7 @@
             font-weight: bold;
         }
         #parcoursimple th, #parcoursimple td{
-            padding: 4px;
+            padding: 2px 4px;
         }
         #parcoursimple .right{
             text-align: right;
@@ -100,24 +102,88 @@
             font-size: x-small;
             min-width: 30px;
         }
-        #parcoursimple .max{
-            background-color: lightpink;
+        #parcoursimple .indicA{
+            height:20px;
+        }
+        #parcoursimple .indicA, #parcoursimple .indicB{
+            font-size: xx-small;
+        }
+        #parcoursimple .indicA .max{
+            background-color: coral;
             border: dashed 1px black;
             width:100%;
             text-align: right;
+            padding-right: 1px;
         }
-        #parcoursimple .propal{
+        #parcoursimple .indicA .propal{
             position:relative;
             left:0;
-            top:-16px;
+            top:-22px;
             display: block;
             background-color: lightgreen;
             border: solid 1px black;
             text-align: left;
+            padding-left: 1px;
+        }
+        #parcoursimple .indicB{
+            position: relative;
+            top: 0;
+            height: 20px;
+            z-index: 0;
+        }
+        #parcoursimple .indicB .bar{
+            display:inline-block;
+        }
+        #parcoursimple .indicB .base{
+            background-color: lightblue;
+            border: 1px solid black;
+            text-align: left;
+            padding-left: 1px;
+        }
+        #parcoursimple .indicB .propal{
+            background-color: lightgreen;
+            border: 1px dashed black;
+            text-align: center;
+        }
+        #parcoursimple .indicB .place{
+            background-color: gold;
+            border: 1px dashed gray;
+            border-right: solid black;
+            border-width: 1px 1px 1px 0;
+            text-align: center;
+        }
+        #parcoursimple .indicB .total{
+            background-color: coral;
+            border: 1px dotted gray;
+            text-align: right;
+            padding-right: 1px;
         }
         #parcoursimple .blur{
             color: transparent;
             text-shadow: 0 0 20px #002;
+        }
+        #parcoursimple .arrow {
+            border: solid black;
+            border-width: 0 2px 2px 0;
+            display: inline-block;
+            padding: 3px;
+        }
+        #parcoursimple .arrow.up {
+            position: relative;
+            top: 3px;
+            left: 0px;
+            transform: rotate(-135deg);
+        }
+        #parcoursimple .arrow.down {
+            top: -24px;
+            position: relative;
+            left: -8px;
+            transform: rotate(45deg);
+        }
+        #parcoursimple .marker{
+            position: relative;
+            top: -10px;
+            margin-left: -4px;
         }
         .hide{
             display: none;
@@ -126,9 +192,8 @@
             display: block;
         }
         /* add other CSS here */
-    ` );
+    `);
 
-    let show = true;
     document.addEventListener('keyup', function(e){
         // if click on a
         if(65 === e.which){
@@ -179,8 +244,7 @@
         ' <th>Position au<br/>Classement</th>' +
         ' <th>Dernière<br/>Proposition</th>' +
         ' <th>Place en<br/>Liste</th>' +
-        ' <th>--Graphique--</th>'+
-        ' <th>% progression<br/>100% = proposition</th>'+
+        ' <th width="300px">Visualisation</th>'+
         ' <th name="useless" class="hide">Total Attente</th>' +
         '</tr></thead>' +
         '<tbody id="parcoursimple_table_body"></tbody></table></div>'
@@ -211,10 +275,21 @@
                 + "<td class='right'>" + this.last + "</td>"
                 + "<td class='right bold'>" + this.waiting_position + "</td>"
                 + "<td>"
+                + "<!--div class='indicA'>"
                 + "<div class='max'>"+this.waiting_position+"</div>"
                 + "<div class='propal' style='width:"+(this.last/(this.last+this.waiting_position)*100)+"%'>"+this.last+"</div>"
+                + "</div-->"
+                + "<div class='indicB'>"
+                + "<div class='bar base' style='width:"+(this.places/(this.last+this.waiting_total)*100)+"%'>"+this.places+"</div>"
+                + "<div class='bar propal' style='width:"+((this.last-this.places)/(this.last+this.waiting_total)*100)+"%'>"+(this.last-this.places)+"</div>"
+                + "<div class='bar place' style='width:"+(this.waiting_position/(this.last+this.waiting_total)*100)+"%'>"+this.waiting_position+"</div>"
+                + "<div class='bar total' style='width:"+((this.waiting_total-this.waiting_position)/(this.last+this.waiting_total)*100)+"%'>"+(this.waiting_total-this.waiting_position)+"</div>"
+                + "<div class='marker' style='left:"+((this.last+this.waiting_position)/(this.last+this.waiting_total)*100)+"%'>"
+                + "<span class='arrow up'></span>"
+                + "<span class='arrow down'></span>"
+                + "</div>"
+                + "</div>"
                 + "</td>"
-                + "<td class='right bold'>" + Math.round(this.last/(this.last+this.waiting_position)*100) + "%</td>"
                 + "<td name='useless' class='right light hide'>" + this.waiting_total + "</td>"
                 + "</tr>";
         }
@@ -270,4 +345,5 @@
             r.innerHTML += wishes[w].show().trim();
         }
     });
+
 })();
