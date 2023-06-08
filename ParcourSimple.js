@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.8
+// @version      0.8.1
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @license      GNU GPLv3
@@ -102,28 +102,8 @@
             font-size: x-small;
             min-width: 30px;
         }
-        #parcoursimple .indicA{
-            height:20px;
-        }
-        #parcoursimple .indicA, #parcoursimple .indicB{
+        #parcoursimple .indicB{
             font-size: xx-small;
-        }
-        #parcoursimple .indicA .max{
-            background-color: coral;
-            border: dashed 1px black;
-            width:100%;
-            text-align: right;
-            padding-right: 1px;
-        }
-        #parcoursimple .indicA .propal{
-            position:relative;
-            left:0;
-            top:-22px;
-            display: block;
-            background-color: lightgreen;
-            border: solid 1px black;
-            text-align: left;
-            padding-left: 1px;
         }
         #parcoursimple .indicB{
             position: relative;
@@ -185,12 +165,6 @@
             top: -10px;
             margin-left: -4px;
         }
-        .hide{
-            display: none;
-        }
-        .show{
-            display: block;
-        }
         /* add other CSS here */
     `);
 
@@ -199,39 +173,16 @@
         if(65 === e.which){
             const x = document.getElementById('parcoursimple');
             x.style.display = (x.style.display === "none")?"block":"none";
-        }
-        // if click r
-        else if(82 === e.which){
-            // sort by nb places liste attente
-            wishes.sort((a,b) => a.waiting_position - b.waiting_position);
-            let r = document.getElementById("parcoursimple_table_body");
-            r.innerHTML='';
-            for(let w in wishes){
-                r.innerHTML += wishes[w].show().trim();
-            }
-        }
-        // if click t
-        else if(84 === e.which){
-            // sort by % progression
-            wishes.sort((a,b) => b.last/(b.last+b.waiting_position) - a.last/(a.last+a.waiting_position));
-            let r = document.getElementById("parcoursimple_table_body");
-            r.innerHTML='';
-            for(let w in wishes){
-                r.innerHTML += wishes[w].show().trim();
-            }
         }else if(66 === e.which){
             document.querySelectorAll("#parcoursimple tbody td:first-child").forEach(x=>x.classList.add('blur'));
             document.querySelectorAll("#parcoursimple tbody td:nth-child(2)").forEach(x=>x.classList.add('blur'));
-        }else if(67 === e.which){
-            document.querySelectorAll("*[name='useless']").forEach(x=> x.classList.toggle('hide'));
         }
     });
 
     $("body").prepend('<div id="psimple"><img src="/favicon.ico"> '+
         'Clavier : ' +
         '<div class="help"><div class="key">a</div> affiche/cache le tableau</div>' +
-        '|<div class="help"><div class="key">r</div> tri par position en liste d\'attente</div>' +
-        '|<div class="help"><div class="key">t</div> tri par % de progression dans le classement</div>' +
+        '|<div class="help"><div class="key">b</div> floute les noms des écoles et formations</div>' +
         '</div>');
     $("body").append(
         '<div id="parcoursimple" name="parcoursimple">' +
@@ -245,7 +196,7 @@
         ' <th>Dernière<br/>Proposition</th>' +
         ' <th>Place en<br/>Liste</th>' +
         ' <th width="300px">Visualisation</th>'+
-        ' <th name="useless" class="hide">Total Attente</th>' +
+        ' <th>Total<br/>Attente</th>' +
         '</tr></thead>' +
         '<tbody id="parcoursimple_table_body"></tbody></table></div>'
     );
@@ -290,7 +241,7 @@
                 + "</div>"
                 + "</div>"
                 + "</td>"
-                + "<td name='useless' class='right light hide'>" + this.waiting_total + "</td>"
+                + "<td class='right light'>" + this.waiting_total + "</td>"
                 + "</tr>";
         }
         rankColor(){
