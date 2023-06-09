@@ -4,11 +4,11 @@
 Une image valant 1000 mots, plutôt que de devoir cliquer sur chaque vœu, puis de déchiffrer le paragraphe textuel,
 ce script vous affiche un tableau avec l'ensemble de vos vœux en attente : 
 
-![Capture d'écran](ParcourSimpleTable.jpg "ParcourSimpleTable")
+![Capture d'écran](resources/ParcourSimpleTable.jpg "ParcourSimpleTable")
 
 Le script ajoute un menu indiquant des raccourcis clavier aussi : 
 
-![Menu ParcourSimple](ParcourSimpleMenu.jpg "Menu ParcourSimple")
+![Menu ParcourSimple](resources/ParcourSimpleMenu.jpg "Menu ParcourSimple")
 
  - `a` pour cacher / Afficher le tableau.
 - `b` pour masquer les noms des ecols/formatins dans le tableau si vous voulez screen/record anonymement
@@ -16,12 +16,12 @@ Le script ajoute un menu indiquant des raccourcis clavier aussi :
 
 Voici ce que cela donne sur la page principale de ParcourSup. 
 
-![Capture d'écran](ParcourSimple.jpg "ParcourSimple")
+![Capture d'écran](resources/ParcourSimple.jpg "ParcourSimple")
 
 
 ## Explications de l'indicateur graphique
 
-![Capture d'écran](ParcourSimpleVisualisation.jpg "ParcourSimple Visualisation")
+![Capture d'écran](resources/ParcourSimpleVisualisation.jpg "ParcourSimple Visualisation")
 
 - La partie bleue correspond aux places de la formation visée (elle ne bouge pas) : 45
 - La partie verte correspond aux personnes ayant reçu une proposition, c'est la place au classement de la dernière personne avoir reçu une porposition moins le nombre de places de la formation. Ici l'exemple montre 72 = 117 - 45.
@@ -47,5 +47,5 @@ J'ai créé un autre script permettant de cacher les informations personnelles a
 
 https://greasyfork.org/en/scripts/468116-parcoursup-obfuscate
 
-![Capture d'écran](ParcourSupObfuscate_login.jpg "ParcourSupObfuscate Login")
-![Capture d'écran](ParcourSupObfuscate_voeux.jpg "ParcourSupObfuscate Voeux")
+![Capture d'écran](resources/ParcourSupObfuscate_login.jpg "ParcourSupObfuscate Login")
+![Capture d'écran](resources/ParcourSupObfuscate_voeux.jpg "ParcourSupObfuscate Voeux")
