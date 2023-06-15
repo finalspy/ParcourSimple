@@ -253,6 +253,7 @@
     }
     const promises = [];
     cards.forEach(card => {
+        // FIXME try if exists else ...
         const onclick = card.querySelectorAll('button')[0].getAttribute('onclick');
         const id = onclick.substring(onclick.indexOf("&") + 1, onclick.lastIndexOf("'"));
         const school = card.querySelectorAll('.psup-wish-card__school')[0].innerHTML;
