@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.8.1
+// @version      0.8.2
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @license      GNU GPLv3
@@ -11,10 +11,10 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
-    GM_addStyle ( `
+    GM_addStyle(`
         #psimple{
             position: absolute;
             top: 0;
@@ -168,25 +168,25 @@
         /* add other CSS here */
     `);
 
-    document.addEventListener('keyup', function(e){
+    document.addEventListener('keyup', function (e) {
         // if click on a
-        if(65 === e.which){
+        if (65 === e.which) {
             const x = document.getElementById('parcoursimple');
-            x.style.display = (x.style.display === "none")?"block":"none";
-        }else if(66 === e.which){
-            document.querySelectorAll("#parcoursimple tbody td:first-child").forEach(x=>x.classList.add('blur'));
-            document.querySelectorAll("#parcoursimple tbody td:nth-child(2)").forEach(x=>x.classList.add('blur'));
+            x.style.display = (x.style.display === "none") ? "block" : "none";
+        } else if (66 === e.which) {
+            document.querySelectorAll("#parcoursimple tbody td:first-child").forEach(x => x.classList.add('blur'));
+            document.querySelectorAll("#parcoursimple tbody td:nth-child(2)").forEach(x => x.classList.add('blur'));
         }
     });
 
-    $("body").prepend('<div id="psimple"><img src="/favicon.ico"> '+
+    $("body").prepend('<div id="psimple"><img src="/favicon.ico"> ' +
         'Clavier : ' +
         '<div class="help"><div class="key">a</div> affiche/cache le tableau</div>' +
         '|<div class="help"><div class="key">b</div> floute les noms des écoles et formations</div>' +
         '</div>');
     $("body").append(
         '<div id="parcoursimple" name="parcoursimple">' +
-        '<table id="parcoursimple_table">'+
+        '<table id="parcoursimple_table">' +
         '<thead><tr>' +
         ' <th>Ecole</th>' +
         ' <th>Cursus</th>' +
@@ -195,7 +195,7 @@
         ' <th>Position au<br/>Classement</th>' +
         ' <th>Dernière<br/>Proposition</th>' +
         ' <th>Place en<br/>Liste</th>' +
-        ' <th width="300px">Visualisation</th>'+
+        ' <th width="300px">Visualisation</th>' +
         ' <th>Total<br/>Attente</th>' +
         '</tr></thead>' +
         '<tbody id="parcoursimple_table_body"></tbody></table></div>'
@@ -204,96 +204,118 @@
     // get all wishes
     const cards = Array.from(document.querySelectorAll(".psup-wish-card--info"));
     const wishes = [];
+
     class Wish {
-        constructor(school, course, id, waiting_position, waiting_total, places, ranking, last, lastLastYear){
-            this.school=school;
-            this.course=course;
-            this.id=id;
-            this.waiting_position=Number(waiting_position);
-            this.waiting_total=Number(waiting_total);
-            this.places=Number(places);
-            this.ranking=Number(ranking);
-            this.last=Number(last);
-            this.lastLastYear=Number(lastLastYear);
+        constructor(school, course, id, waiting_position, waiting_total, places, ranking, last, lastLastYear) {
+            this.school = school;
+            this.course = course;
+            this.id = id;
+            this.waiting_position = Number(waiting_position);
+            this.waiting_total = Number(waiting_total);
+            this.places = Number(places);
+            this.ranking = Number(ranking);
+            this.last = Number(last);
+            this.lastLastYear = Number(lastLastYear);
+            this.error = false;
         }
-        show(){
-            return "<tr>"
-                + "<td>"+ this.school + "</td>"
-                + "<td>" + this.course + "</td>"
-                + "<td class='right'>" + this.places + "</td>"
-                + "<td class='right'>" + (Number.isNaN(this.lastLastYear)?"???":this.lastLastYear) + "</td>"
-                + "<td class='right " + this.rankColor() + "'>" + this.ranking + this.rankDiff() + "</td>"
-                + "<td class='right'>" + this.last + "</td>"
-                + "<td class='right bold'>" + this.waiting_position + "</td>"
-                + "<td>"
-                + "<!--div class='indicA'>"
-                + "<div class='max'>"+this.waiting_position+"</div>"
-                + "<div class='propal' style='width:"+(this.last/(this.last+this.waiting_position)*100)+"%'>"+this.last+"</div>"
-                + "</div-->"
-                + "<div class='indicB'>"
-                + "<div class='bar base' style='width:"+(this.places/(this.last+this.waiting_total)*100)+"%'>"+this.places+"</div>"
-                + "<div class='bar propal' style='width:"+((this.last-this.places)/(this.last+this.waiting_total)*100)+"%'>"+(this.last-this.places)+"</div>"
-                + "<div class='bar place' style='width:"+(this.waiting_position/(this.last+this.waiting_total)*100)+"%'>"+this.waiting_position+"</div>"
-                + "<div class='bar total' style='width:"+((this.waiting_total-this.waiting_position)/(this.last+this.waiting_total)*100)+"%'>"+(this.waiting_total-this.waiting_position)+"</div>"
-                + "<div class='marker' style='left:"+((this.last+this.waiting_position)/(this.last+this.waiting_total)*100)+"%'>"
-                + "<span class='arrow up'></span>"
-                + "<span class='arrow down'></span>"
-                + "</div>"
-                + "</div>"
-                + "</td>"
-                + "<td class='right light'>" + this.waiting_total + "</td>"
-                + "</tr>";
+
+        setError() {
+            this.error = true;
+            return this;
+        };
+
+        show() {
+            let ligne = "<tr>";
+            ligne += "<td>" + this.school + "</td>";
+            ligne += "<td>" + this.course + "</td>";
+            if (this.error) {
+                ligne += "<td colspan='7'>Une erreur est survenue, classement indisponible dans ParcourSimple :(</td>";
+            } else {
+                ligne += "<td class='right'>" + this.places + "</td>";
+                ligne += "<td class='right'>" + (Number.isNaN(this.lastLastYear) ? "???" : this.lastLastYear) + "</td>";
+                ligne += "<td class='right " + this.rankColor() + "'>" + this.ranking + this.rankDiff() + "</td>";
+                ligne += "<td class='right'>" + this.last + "</td>";
+                ligne += "<td class='right bold'>" + this.waiting_position + "</td>";
+                ligne += "<td>"
+                    + "<div class='indicB'>"
+                    + "<div class='bar base' style='width:" + (this.places / (this.last + this.waiting_total) * 100) + "%'>" + this.places + "</div>"
+                    + "<div class='bar propal' style='width:" + ((this.last - this.places) / (this.last + this.waiting_total) * 100) + "%'>" + (this.last - this.places) + "</div>"
+                    + "<div class='bar place' style='width:" + (this.waiting_position / (this.last + this.waiting_total) * 100) + "%'>" + this.waiting_position + "</div>"
+                    + "<div class='bar total' style='width:" + ((this.waiting_total - this.waiting_position) / (this.last + this.waiting_total) * 100) + "%'>" + (this.waiting_total - this.waiting_position) + "</div>"
+                    + "<div class='marker' style='left:" + ((this.last + this.waiting_position) / (this.last + this.waiting_total) * 100) + "%'>"
+                    + "<span class='arrow up'></span>"
+                    + "<span class='arrow down'></span>"
+                    + "</div>"
+                    + "</div>"
+                    + "</td>";
+                ligne += "<td class='right light'>" + this.waiting_total + "</td>";
+            }
+            ligne += "</tr>";
+            return ligne;
         }
-        rankColor(){
-            return isNaN(this.lastLastYear)?"nan":this.lastLastYear > this.ranking ? "ok" : "ko";
+
+        rankColor() {
+            return isNaN(this.lastLastYear) ? "nan" : this.lastLastYear > this.ranking ? "ok" : "ko";
         }
-        rankDiff(){
-            return (Number.isNaN(this.lastLastYear)?"":" <div class='diff'>("+(this.ranking - this.lastLastYear)+")</div>");
+
+        rankDiff() {
+            return (Number.isNaN(this.lastLastYear) ? "" : " <div class='diff'>(" + (this.ranking - this.lastLastYear) + ")</div>");
         }
     }
+
     const promises = [];
     cards.forEach(card => {
-        // FIXME try if exists else ...
-        const onclick = card.querySelectorAll('button')[0].getAttribute('onclick');
-        const id = onclick.substring(onclick.indexOf("&") + 1, onclick.lastIndexOf("'"));
         const school = card.querySelectorAll('.psup-wish-card__school')[0].innerHTML;
-        const course= card.querySelectorAll('.psup-wish-card__course')[0].innerHTML;
-        //https://dossierappel.parcoursup.fr/Candidat/
-        const URL = "admissions?ACTION=2&" +id + "&frOpened=false&frJsModalButton=true";
-        promises.push($.ajax({
-            url: URL,
-            type: "GET",
-            dataType: "html",
-            success: function (h) {
-                const template = document.createElement('div');
-                template.innerHTML = h.trim();
-                const waiting_position = template.querySelector("div ul li:nth-child(1) b").innerHTML;
-                const waiting_total = template.querySelector("div ul li:nth-child(2) b").innerHTML;
-                // --------------
-                const places = template.querySelector(".fr-alert ul li:nth-child(1) b").innerHTML;
-                const ranking = template.querySelector(".fr-alert ul li:nth-child(2) p b").innerHTML;
-                const last = template.querySelector(".fr-alert ul li:nth-child(3) b").innerHTML;
-                const lastYear = template.querySelector(".fr-alert ul li:nth-child(4) b");
-                const lastLastYear = (lastYear)?lastYear.innerHTML:"?";
-                wishes.push(new Wish(school,
-                    course,
-                    id,
-                    waiting_position,
-                    waiting_total,
-                    places,
-                    ranking,
-                    last,
-                    lastLastYear
-                ));
-            },
-            error: function (h) { console.err(h); },
-            complete: function () {}
-        }));
+        const course = card.querySelectorAll('.psup-wish-card__course')[0].innerHTML;
+        try {
+            const onclick = card.querySelectorAll('button')[0].getAttribute('onclick');
+            const id = onclick.substring(onclick.indexOf("&") + 1, onclick.lastIndexOf("'"));
+            const URL = "admissions?ACTION=2&" + id + "&frOpened=false&frJsModalButton=true";
+            promises.push($.ajax({
+                url: URL,
+                type: "GET",
+                dataType: "html",
+                success: function (h) {
+                    const template = document.createElement('div');
+                    template.innerHTML = h.trim();
+                    const waiting_position = template.querySelector("div ul li:nth-child(1) b").innerHTML;
+                    const waiting_total = template.querySelector("div ul li:nth-child(2) b").innerHTML;
+                    // --------------
+                    const places = template.querySelector(".fr-alert ul li:nth-child(1) b").innerHTML;
+                    const ranking = template.querySelector(".fr-alert ul li:nth-child(2) p b").innerHTML;
+                    const last = template.querySelector(".fr-alert ul li:nth-child(3) b").innerHTML;
+                    const lastYear = template.querySelector(".fr-alert ul li:nth-child(4) b");
+                    const lastLastYear = (lastYear) ? lastYear.innerHTML : "?";
+                    wishes.push(new Wish(school,
+                        course,
+                        id,
+                        waiting_position,
+                        waiting_total,
+                        places,
+                        ranking,
+                        last,
+                        lastLastYear
+                    ));
+                },
+                error: function (h) {
+                    console.err(h);
+                },
+                complete: function () {
+                }
+            }));
+        } catch (error) {
+            // log the error in the console
+            console.log(error);
+            // send feedback
+            console.info(card);
+            // add placeholder
+            wishes.push(new Wish(school, course).setError());
+        }
     });
-    $.when.apply($, promises).then(function() {
-        wishes.sort((a,b) => a.waiting_position - b.waiting_position);
+    $.when.apply($, promises).then(function () {
+        wishes.sort((a, b) => a.waiting_position - b.waiting_position);
         let r = document.getElementById("parcoursimple_table_body");
-        for(let w in wishes){
+        for (let w in wishes) {
             r.innerHTML += wishes[w].show().trim();
         }
     });
