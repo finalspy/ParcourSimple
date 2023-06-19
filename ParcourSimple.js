@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.8.2
+// @version      0.8.3
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @license      GNU GPLv3
@@ -224,12 +224,19 @@
             return this;
         };
 
+        setMessage(_message) {
+            this.message = _message;
+            return this;
+        };
+
         show() {
             let ligne = "<tr>";
             ligne += "<td>" + this.school + "</td>";
             ligne += "<td>" + this.course + "</td>";
             if (this.error) {
                 ligne += "<td colspan='7'>Une erreur est survenue, classement indisponible dans ParcourSimple :(</td>";
+            } else if ( this.message ) {
+                ligne += "<td colspan='7'>" + this.message + "</td>";
             } else {
                 ligne += "<td class='right'>" + this.places + "</td>";
                 ligne += "<td class='right'>" + (Number.isNaN(this.lastLastYear) ? "???" : this.lastLastYear) + "</td>";
@@ -268,41 +275,48 @@
         const school = card.querySelectorAll('.psup-wish-card__school')[0].innerHTML;
         const course = card.querySelectorAll('.psup-wish-card__course')[0].innerHTML;
         try {
-            const onclick = card.querySelectorAll('button')[0].getAttribute('onclick');
-            const id = onclick.substring(onclick.indexOf("&") + 1, onclick.lastIndexOf("'"));
-            const URL = "admissions?ACTION=2&" + id + "&frOpened=false&frJsModalButton=true";
-            promises.push($.ajax({
-                url: URL,
-                type: "GET",
-                dataType: "html",
-                success: function (h) {
-                    const template = document.createElement('div');
-                    template.innerHTML = h.trim();
-                    const waiting_position = template.querySelector("div ul li:nth-child(1) b").innerHTML;
-                    const waiting_total = template.querySelector("div ul li:nth-child(2) b").innerHTML;
-                    // --------------
-                    const places = template.querySelector(".fr-alert ul li:nth-child(1) b").innerHTML;
-                    const ranking = template.querySelector(".fr-alert ul li:nth-child(2) p b").innerHTML;
-                    const last = template.querySelector(".fr-alert ul li:nth-child(3) b").innerHTML;
-                    const lastYear = template.querySelector(".fr-alert ul li:nth-child(4) b");
-                    const lastLastYear = (lastYear) ? lastYear.innerHTML : "?";
-                    wishes.push(new Wish(school,
-                        course,
-                        id,
-                        waiting_position,
-                        waiting_total,
-                        places,
-                        ranking,
-                        last,
-                        lastLastYear
-                    ));
-                },
-                error: function (h) {
-                    console.err(h);
-                },
-                complete: function () {
-                }
-            }));
+            const buttons = card.querySelectorAll('button');
+            if(buttons.length > 0 ) {
+                const onclick = buttons[0].getAttribute('onclick');
+                const id = onclick.substring(onclick.indexOf("&") + 1, onclick.lastIndexOf("'"));
+                const URL = "admissions?ACTION=2&" + id + "&frOpened=false&frJsModalButton=true";
+                promises.push($.ajax({
+                    url: URL,
+                    type: "GET",
+                    dataType: "html",
+                    success: function (h) {
+                        const template = document.createElement('div');
+                        template.innerHTML = h.trim();
+                        const waiting_position = template.querySelector("div ul li:nth-child(1) b").innerHTML;
+                        const waiting_total = template.querySelector("div ul li:nth-child(2) b").innerHTML;
+                        // --------------
+                        const places = template.querySelector(".fr-alert ul li:nth-child(1) b").innerHTML;
+                        const ranking = template.querySelector(".fr-alert ul li:nth-child(2) p b").innerHTML;
+                        const last = template.querySelector(".fr-alert ul li:nth-child(3) b").innerHTML;
+                        const lastYear = template.querySelector(".fr-alert ul li:nth-child(4) b");
+                        const lastLastYear = (lastYear) ? lastYear.innerHTML : "?";
+                        wishes.push(new Wish(school,
+                            course,
+                            id,
+                            waiting_position,
+                            waiting_total,
+                            places,
+                            ranking,
+                            last,
+                            lastLastYear
+                        ));
+                    },
+                    error: function (h) {
+                        console.err(h);
+                    },
+                    complete: function () {
+                    }
+                }));
+            }else{
+                // apprentissage ? essaye afficher details
+                const details = card.querySelectorAll(".m_psup-wish-card__detail");
+                wishes.push(new Wish(school, course).setMessage(details.innerText));
+            }
         } catch (error) {
             // log the error in the console
             console.log(error);
