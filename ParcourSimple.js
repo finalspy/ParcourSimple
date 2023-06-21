@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.8.3
+// @version      0.8.4
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @license      GNU GPLv3
@@ -235,7 +235,7 @@
             ligne += "<td>" + this.course + "</td>";
             if (this.error) {
                 ligne += "<td colspan='7'>Une erreur est survenue, classement indisponible dans ParcourSimple :(</td>";
-            } else if ( this.message ) {
+            } else if (this.message) {
                 ligne += "<td colspan='7'>" + this.message + "</td>";
             } else {
                 ligne += "<td class='right'>" + this.places + "</td>";
@@ -276,7 +276,7 @@
         const course = card.querySelectorAll('.psup-wish-card__course')[0].innerHTML;
         try {
             const buttons = card.querySelectorAll('button');
-            if(buttons.length > 0 ) {
+            if (buttons.length > 0) {
                 const onclick = buttons[0].getAttribute('onclick');
                 const id = onclick.substring(onclick.indexOf("&") + 1, onclick.lastIndexOf("'"));
                 const URL = "admissions?ACTION=2&" + id + "&frOpened=false&frJsModalButton=true";
@@ -312,10 +312,9 @@
                     complete: function () {
                     }
                 }));
-            }else{
+            } else {
                 // apprentissage ? essaye afficher details
-                const details = card.querySelectorAll(".m_psup-wish-card__detail");
-                wishes.push(new Wish(school, course).setMessage(details.innerText));
+                wishes.push(new Wish(school, course).setMessage(card.querySelectorAll(".m_psup-wish-card__detail")[0].innerText));
             }
         } catch (error) {
             // log the error in the console
