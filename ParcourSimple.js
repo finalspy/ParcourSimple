@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.8.2
+// @version      0.9.0
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @license      GNU GPLv3
@@ -66,6 +66,8 @@
         }
         #parcoursimple tr{
              line-height: 20px;
+             height: 50px;
+             vertical-align: top;
         }
         #parcoursimple tr:nth-child(even) {background: #DDF}
         #parcoursimple tr:nth-child(odd) {background: #EEE}
@@ -76,6 +78,9 @@
         }
         #parcoursimple th, #parcoursimple td{
             padding: 2px 4px;
+        }
+        #parcoursimple td.indic{
+            padding: 4px 0 0 0;
         }
         #parcoursimple .right{
             text-align: right;
@@ -102,37 +107,48 @@
             font-size: x-small;
             min-width: 30px;
         }
-        #parcoursimple .indicB{
+        #parcoursimple .indicB, #parcoursimple .indicC {
             font-size: xx-small;
-        }
-        #parcoursimple .indicB{
             position: relative;
-            top: 0;
             height: 20px;
             z-index: 0;
+            padding: 0;
+            margin: 0;
         }
-        #parcoursimple .indicB .bar{
+        #parcoursimple .indicB{
+            top: 0;
+            margin-bottom: -7px;
+        }
+        #parcoursimple .indicC{
+            top: 6px;
+        }
+        #parcoursimple .bar{
             display:inline-block;
+            height: 13px;
         }
-        #parcoursimple .indicB .base{
+        #parcoursimple .bar span{
+            position: relative;
+            top: -4px;
+        }
+        #parcoursimple .base{
             background-color: lightblue;
             border: 1px solid black;
             text-align: left;
             padding-left: 1px;
         }
-        #parcoursimple .indicB .propal{
+        #parcoursimple .propal{
             background-color: lightgreen;
             border: 1px dashed black;
             text-align: center;
         }
-        #parcoursimple .indicB .place{
+        #parcoursimple .place{
             background-color: gold;
             border: 1px dashed gray;
             border-right: solid black;
             border-width: 1px 1px 1px 0;
             text-align: center;
         }
-        #parcoursimple .indicB .total{
+        #parcoursimple .total{
             background-color: coral;
             border: 1px dotted gray;
             text-align: right;
@@ -150,7 +166,7 @@
         }
         #parcoursimple .arrow.up {
             position: relative;
-            top: 3px;
+            top: -4px;
             left: 0px;
             transform: rotate(-135deg);
         }
@@ -164,6 +180,23 @@
             position: relative;
             top: -10px;
             margin-left: -4px;
+        }
+        #parcoursimple .marker2{
+            position: relative;
+            top: -30px;
+            margin-left: -4px;
+        }
+        #parcoursimple .val{
+            font-style: italic;
+            font-size: xx-small;
+            position: relative;
+            left: -12px;
+        }
+        #parcoursimple .val2{
+            font-style: italic;
+            font-size: xx-small;
+            position: relative;
+            left: -12px;
         }
         /* add other CSS here */
     `);
@@ -224,30 +257,57 @@
             return this;
         };
 
+        setMessage(_message) {
+            this.message = _message;
+            return this;
+        };
+
         show() {
             let ligne = "<tr>";
             ligne += "<td>" + this.school + "</td>";
             ligne += "<td>" + this.course + "</td>";
             if (this.error) {
                 ligne += "<td colspan='7'>Une erreur est survenue, classement indisponible dans ParcourSimple :(</td>";
+            } else if ( this.message ) {
+                ligne += "<td colspan='7'>" + this.message + "</td>";
             } else {
                 ligne += "<td class='right'>" + this.places + "</td>";
                 ligne += "<td class='right'>" + (Number.isNaN(this.lastLastYear) ? "???" : this.lastLastYear) + "</td>";
                 ligne += "<td class='right " + this.rankColor() + "'>" + this.ranking + this.rankDiff() + "</td>";
                 ligne += "<td class='right'>" + this.last + "</td>";
                 ligne += "<td class='right bold'>" + this.waiting_position + "</td>";
-                ligne += "<td>"
-                    + "<div class='indicB'>"
-                    + "<div class='bar base' style='width:" + (this.places / (this.last + this.waiting_total) * 100) + "%'>" + this.places + "</div>"
-                    + "<div class='bar propal' style='width:" + ((this.last - this.places) / (this.last + this.waiting_total) * 100) + "%'>" + (this.last - this.places) + "</div>"
-                    + "<div class='bar place' style='width:" + (this.waiting_position / (this.last + this.waiting_total) * 100) + "%'>" + this.waiting_position + "</div>"
-                    + "<div class='bar total' style='width:" + ((this.waiting_total - this.waiting_position) / (this.last + this.waiting_total) * 100) + "%'>" + (this.waiting_total - this.waiting_position) + "</div>"
+                ligne += "<td class='indic'>";
+                ligne += "<div class='indicB'>"
+                    + "<div class='bar base' style='width:" + (this.places / (this.last + this.waiting_total) * 100) + "%'><span>" + this.places + "</span></div>"
+                    + "<div class='bar propal' style='width:" + ((this.last - this.places) / (this.last + this.waiting_total) * 100) + "%'><span>" + (this.last - this.places) + "</span></div>"
+                    + "<div class='bar place' style='width:" + (this.waiting_position / (this.last + this.waiting_total) * 100) + "%'><span>" + this.waiting_position + "</span></div>"
+                    + "<div class='bar total' style='width:" + ((this.waiting_total - this.waiting_position) / (this.last + this.waiting_total) * 100) + "%'><span>" + (this.waiting_total - this.waiting_position) + "</span></div>"
                     + "<div class='marker' style='left:" + ((this.last + this.waiting_position) / (this.last + this.waiting_total) * 100) + "%'>"
                     + "<span class='arrow up'></span>"
                     + "<span class='arrow down'></span>"
                     + "</div>"
+                    + "</div>";
+                ligne += "<div class='indicC'>"
+                    + "<div class='bar base' style='width:" + (this.places / this.ranking * 100) + "%'><span>" + this.places + "</span></div>"
+                    + "<div class='bar propal' style='width:" + ((this.last - this.places) / this.ranking * 100) + "%'><span>" + (this.last - this.places) + "</span></div>";
+                if(this.last < this.lastLastYear){
+                    ligne += "<div class='bar place' style='width:" + ((this.lastLastYear - this.last) / this.ranking * 100) + "%'><span>" + (this.lastLastYear - this.last) + "</span></div>"
+                        + "<div class='bar total' style='width:" + ((this.ranking - this.lastLastYear) / this.ranking * 100) + "%'><span>" + (this.ranking - this.lastLastYear) + "</span></div>";
+                }else{
+                    ligne += "<div class='bar place' style='width:" + ((this.last - this.lastLastYear) / this.ranking * 100) + "%'><span>" + (this.last - this.lastLastYear) + "</span></div>"
+                        + "<div class='bar total' style='width:" + ((this.ranking - this.last) / this.ranking * 100) + "%'><span>" + (this.ranking - this.last) + "</span></div>";
+                }
+                ligne += "<div class='marker' style='left:" + (this.lastLastYear / this.ranking * 100) + "%'>"
+                    + "<span class='arrow up'></span>"
+                    + "<span class='val'>" + this.lastLastYear + "</span>"
                     + "</div>"
-                    + "</td>";
+                ligne += "<div class='marker2' style='left:100%'>"
+                    + "<span class='arrow up'></span>"
+                    + "<span class='val2'>" + this.ranking + "</span>"
+                    + "</div>"
+                    + "</div>";
+                ligne += "</div>";
+                ligne += "</td>";
                 ligne += "<td class='right light'>" + this.waiting_total + "</td>";
             }
             ligne += "</tr>";
@@ -268,41 +328,48 @@
         const school = card.querySelectorAll('.psup-wish-card__school')[0].innerHTML;
         const course = card.querySelectorAll('.psup-wish-card__course')[0].innerHTML;
         try {
-            const onclick = card.querySelectorAll('button')[0].getAttribute('onclick');
-            const id = onclick.substring(onclick.indexOf("&") + 1, onclick.lastIndexOf("'"));
-            const URL = "admissions?ACTION=2&" + id + "&frOpened=false&frJsModalButton=true";
-            promises.push($.ajax({
-                url: URL,
-                type: "GET",
-                dataType: "html",
-                success: function (h) {
-                    const template = document.createElement('div');
-                    template.innerHTML = h.trim();
-                    const waiting_position = template.querySelector("div ul li:nth-child(1) b").innerHTML;
-                    const waiting_total = template.querySelector("div ul li:nth-child(2) b").innerHTML;
-                    // --------------
-                    const places = template.querySelector(".fr-alert ul li:nth-child(1) b").innerHTML;
-                    const ranking = template.querySelector(".fr-alert ul li:nth-child(2) p b").innerHTML;
-                    const last = template.querySelector(".fr-alert ul li:nth-child(3) b").innerHTML;
-                    const lastYear = template.querySelector(".fr-alert ul li:nth-child(4) b");
-                    const lastLastYear = (lastYear) ? lastYear.innerHTML : "?";
-                    wishes.push(new Wish(school,
-                        course,
-                        id,
-                        waiting_position,
-                        waiting_total,
-                        places,
-                        ranking,
-                        last,
-                        lastLastYear
-                    ));
-                },
-                error: function (h) {
-                    console.err(h);
-                },
-                complete: function () {
-                }
-            }));
+            const buttons = card.querySelectorAll('button');
+            if(buttons.length > 0 ) {
+                const onclick = buttons[0].getAttribute('onclick');
+                const id = onclick.substring(onclick.indexOf("&") + 1, onclick.lastIndexOf("'"));
+                const URL = "admissions?ACTION=2&" + id + "&frOpened=false&frJsModalButton=true";
+                promises.push($.ajax({
+                    url: URL,
+                    type: "GET",
+                    dataType: "html",
+                    success: function (h) {
+                        const template = document.createElement('div');
+                        template.innerHTML = h.trim();
+                        const waiting_position = template.querySelector("div ul li:nth-child(1) b").innerHTML;
+                        const waiting_total = template.querySelector("div ul li:nth-child(2) b").innerHTML;
+                        // --------------
+                        const places = template.querySelector(".fr-alert ul li:nth-child(1) b").innerHTML;
+                        const ranking = template.querySelector(".fr-alert ul li:nth-child(2) p b").innerHTML;
+                        const last = template.querySelector(".fr-alert ul li:nth-child(3) b").innerHTML;
+                        const lastYear = template.querySelector(".fr-alert ul li:nth-child(4) b");
+                        const lastLastYear = (lastYear) ? lastYear.innerHTML : "?";
+                        wishes.push(new Wish(school,
+                            course,
+                            id,
+                            waiting_position,
+                            waiting_total,
+                            places,
+                            ranking,
+                            last,
+                            lastLastYear
+                        ));
+                    },
+                    error: function (h) {
+                        console.err(h);
+                    },
+                    complete: function () {
+                    }
+                }));
+            }else{
+                // apprentissage ? essaye afficher details
+                const details = card.querySelectorAll(".m_psup-wish-card__detail");
+                wishes.push(new Wish(school, course).setMessage(details.innerText));
+            }
         } catch (error) {
             // log the error in the console
             console.log(error);
