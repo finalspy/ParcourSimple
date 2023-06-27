@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ParcourSimple
 // @namespace    https://ypetit.net/
-// @version      0.8.4
+// @version      0.8.5
 // @description  Simplification de l'affichage des voeux en attente sur ParcourSup!
 // @author       ypetit
 // @license      GNU GPLv3
@@ -314,7 +314,7 @@
                 }));
             } else {
                 // apprentissage ? essaye afficher details
-                wishes.push(new Wish(school, course).setMessage(card.querySelectorAll(".m_psup-wish-card__detail")[0].innerText));
+                wishes.push(new Wish(school, course).setMessage(card.querySelectorAll(".psup-wish-card__detail")[0].innerText));
             }
         } catch (error) {
             // log the error in the console
